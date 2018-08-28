@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MDS Scatterplot Example</title>
+<style>
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+text {
+    font-size : 12px;
+}
+.axis text {
+    font-size: 10px;
+}
+
+circle {
+    stroke: #1f77b4;
+    fill : #1f77b4;
+}
+
+</style>
+</head>
+
+<body>
+    <div id="cities"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+<script src="mds.js"></script>
+<script>
+var format = d3.time.format("%m/%d/%Y");
+var sel=JSON.parse(localStorage.getItem("seleccion"));
+var sell=sel;
+var labels=Array.apply(null, Array(sel.length)).map(function (x, i) { if(i%2==0) {return '1';} return '0'; });
+sel= sel.filter( function(elem,index,self){
+    return index==self.indexOf(elem);
+})
+localStorage.setItem('etiquetas', JSON.stringify(labels));
+console.log(sel);
+var resul=[];
+var Datos=[];
+var docu=localStorage.getItem("Dia_A");
+d3.csv(docu, function(data){
+    var diai=localStorage.getItem('diaini');
+    var diaf=localStorage.getItem('diafin');
+    data.forEach(function(d) {
+          Datos.push(d);
+    });
+    resul=Datos.map(function(d){
+      return d;
+    }).filter(function(d,i){
+        var es=0;
+        for (var l = 0; l < sel.length; l++) {
+            if (d.key==sel[l]) {es=1; break;}
+        }
+        return es;
+    });
+    for(var p=0;p<resul.length;p++)
+    {
+        var array =Object.keys(resul[p]).map(function(k) { return parseInt(resul[p][k]) });
+        resul[p]= array.splice(1,15);
+    }
+function distance(A1,A2)
+{
+    var sum=0;
+     for(var i=0; i < A1.length; i++){
+        sum=sum + Math.pow(A1[i]-A2[i],2);
+    }
+    return Math.sqrt(sum);
+}
+    var matriz=[];
+    
+    for(var j=0 ; j<resul.length;j++)
+    {
+        matriz.push(Array.apply(null, Array(resul.length)).map(function (x, i) { return 0; }));
+    }
+    //console.log(matriz);
+    for(var i=0; i<resul.length; i++)
+    {
+        for(var j=i ; j<resul.length;j++)
+        {
+            var val=distance(resul[i],resul[j]);
+            matriz[i][j]=val;
+            matriz[j][i]=val;
+        }
+    }
+
+
+var cityPositions = numeric.transpose(mds.classic(matriz));
+
+var w = Math.min(720, document.documentElement.clientWidth - 20), 
+    h = w /2;
+
+mds.drawD3ScatterPlot(d3.select("#cities"),
+    cityPositions[0],
+    cityPositions[1],
+    sell,
+    {
+        w :  Math.min(720, document.documentElement.clientWidth - 20),
+        h : w /2,
+        padding : 37,
+        reverseX : true,
+        reverseY : true,
+    });
+});
+</script>
+</body>
+</html>

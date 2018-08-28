@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.chartW { 
+  background: #fff;
+}
+.chartL { 
+  background: #fff;
+}
+p {
+  font: 12px helvetica;
+}
+
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+  shape-rendering: crispEdges;
+}
+
+button {
+  position: absolute;
+  right: 50px;
+  top: 10px;
+}
+.principal {
+  position: absolute;
+  top: 600px;
+  left: 20px;
+  width: 700px;
+  height: 450px;
+  border: 3px;
+}
+.principal2 {
+  position: absolute;
+  top: 600px;
+  left: 740px;
+  width: 700px;
+  height: 450px;
+  border: 3px;
+}
+</style>
+<body>
+<script src="https://d3js.org/d3.v2.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Esto es un comentario
+<button id="Caracteristica">Update</button> 
+-->
+<div>
+<h1>Information found</h1>
+<OL>
+<LI> The characteristics that influence more in the victory are: Hero Damage, Siege Damage, Healing, Highest Kill Streak.
+<LI> There is a relationship between the teams focused on the aggressive game and the number of mercenary camps they did, where teams with Hero Damage are more likely to win if those camps are held.
+<LI> An aggressive game pattern was found by the players who usually play in the afternoon, can be seen in the Horizon Chart by sliding halfway on any day.
+<LI> Finally since the departure of the new hero Garrosh the metagame changed to a more passive game oriented to the sustenance of the heroes (Self Healing, Damage Taken) where games are usually defined by who opted for a game more linked to endurance of damage.
+</OL>
+</div>
+<select id="Caracteristica">
+  <option value="HeroLevel">HeroLevel</option>
+  <option value="InGameLevel">InGameLevel</option>
+  <option value="Takedowns">Takedowns</option>
+  <option value="KillingBlows">KillingBlows</option>
+  <option value="Assists">Assists</option>
+  <option value="Deaths">Deaths</option>
+  <option value="HighestKillStreak">HighestKillStreak</option>
+  <option value="HeroDamage">HeroDamage</option>
+  <option value="SiegeDamage">SiegeDamage</option>
+  <option value="Healing">Healing</option>
+  <option value="SelfHealing">SelfHealing</option>
+  <option value="DamageTaken">DamageTaken</option>
+  <option value="ExperienceContribution">ExperienceContribution</option>
+  <option value="MercCampCaptures">MercCampCaptures</option>
+</select>
+<div class="chartW">
+</div>
+<div class="Menu">
+<ul>
+<li><a id="Horizon" href="Bu.html" target="formularios">Horizon</a></li>
+</ul>  
+<ul>
+<li><a href="Scatter.html" target="formularios2">Scatter</a></li>
+</ul>  
+</div>
+<div class="principal">
+<iframe  style="width: 700px; height: 400px" name="formularios"></iframe>
+</div>
+<div class="principal2">
+  <iframe style="width: 700px; height: 400px" name="formularios2" scrolling="no"></iframe>
+</div>
+<script>
+
+var datearray = [];
+var colorrange = [];
+  
+strokecolor = "#045A8D";
+var warrange = ["#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"];
+var sperange = ["#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"];
+var suprange = ["#1bd386", "#5cf2b3", "#7cf4c2", "#97f4ce", "#c4ffe7"];
+var asarange = ["#9831e3", "#a946f2", "#a953e8", "#b56fe8", "#ce96f7"];
+var format = d3.time.format("%m/%d/%y");
+
+var margin = {top: 20, right: 40, bottom: 30, left: 30};
+var width = document.body.clientWidth - margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
+
+var tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "remove")
+    .style("position", "absolute")
+    .style("z-index", "20")
+    .style("visibility", "hidden")
+    .style("top", "30px")
+    .style("left", "55px");
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height-10, 0]);
+
+var z = d3.scale.ordinal()
+    .range(colorrange);
+
+var warr=d3.scale.ordinal()
+    .range(warrange);
+
+var sper=d3.scale.ordinal()
+    .range(sperange);
+
+var supr=d3.scale.ordinal()
+    .range(suprange);
+
+var asar=d3.scale.ordinal()
+    .range(asarange);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .ticks(d3.time.weeks);
+
+var yAxis = d3.svg.axis()
+    .scale(y);
+
+
+var stack0 = d3.layout.stack()
+    .offset("silhouette")
+    .values(function(d) { return d.values; })
+    .x(function(d) { return d.date; })
+    .y(function(d) { return d.MercCampCaptures; });
+
+
+
+var nest = d3.nest()
+    .key(function(d) { return d.key; });
+var area = d3.svg.area()
+    .interpolate("cardinal")
+    .x(function(d) { return x(d.date); })
+    .y0(function(d) { return y(d.y0); })
+    .y1(function(d) { return y(d.y0 + d.y); });
+
+ var spe="Specialist";
+  var war="Warrior";
+  var supp="Support";
+  var asa="Assassin";
+var svg = d3.select(".chartW").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+var layers=[];
+var leyers1=[];
+var pro;
+var graph = d3.csv("dataL.csv", function(data) {
+  data.forEach(function(d) {
+    d.date = format.parse(d.date);
+    d.HeroLevel = +d.HeroLevel;
+    d.InGameLevel = +d.InGameLevel;
+    d.Takedowns = +d.Takedowns;
+    d.KillingBlows = +d.KillingBlows;
+    d.Assists = +d.Assists;
+    d.Deaths = +d.Deaths;
+    d.HighestKillStreak = +d.HighestKillStreak;
+    d.HeroDamage = +d.HeroDamage;
+    d.SiegeDamage = +d.SiegeDamage;
+    d.Healing = +d.Healing;
+    d.SelfHealing = +d.SelfHealing;
+    d.DamageTaken = +d.DamageTaken;
+    d.ExperienceContribution = +d.ExperienceContribution;
+    d.MercCampCaptures = +d.MercCampCaptures;
+  });
+
+  layers = stack0(nest.entries(data));
+  //document.getElementById("d1").innerHTML = JSON.stringify(layers);
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+  y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
+
+  svg.selectAll(".layer")
+      .data(layers)
+    .enter().append("path")
+      .attr("class", "layer")
+      .attr("d", function(d) { return area(d.values); })
+      .style("fill", function(d, i) { return d.values[0].type == spe ? sper(i) : d.values[0].type == war ? warr(i) : d.values[0].type == supp ? supr(i) : d.values[0].type == asa ? asar(i) : z(i); });
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + width + ", 0)")
+      .call(yAxis.orient("right"));
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis.orient("left"));
+
+  svg.selectAll(".layer")
+    .attr("opacity", 1)
+    .on("mouseover", function(d, i) {
+      svg.selectAll(".layer").transition()
+      .duration(250)
+      .attr("opacity", function(d, j) {
+        return j != i ? 0.6 : 1;
+    })})
+
+    .on("mousemove", function(d, i) {
+      mousex = d3.mouse(this);
+      mousex = mousex[0];
+      var invertedx = x.invert(mousex);
+      invertedx = invertedx.getMonth() + invertedx.getDate();
+      var selected = (d.values);
+      for (var k = 0; k < selected.length; k++) {
+        datearray[k] = selected[k].date
+        datearray[k] = datearray[k].getMonth() + datearray[k].getDate();
+      }
+      mousedate = datearray.indexOf(invertedx);
+      var e = document.getElementById('Caracteristica').value;
+      //console.log(d.values[mousedate]);
+      pro = d.values[mousedate][e];
+
+      d3.select(this)
+      .classed("hover", true)
+      .attr("stroke", strokecolor)
+      .attr("stroke-width", "0.5px"), 
+      tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "visible").style("top","70px");
+      
+    })
+    .on("mouseout", function(d, i) {
+     svg.selectAll(".layer")
+      .transition()
+      .duration(250)
+      .attr("opacity", "1");
+      d3.select(this)
+      .classed("hover", false)
+      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "hidden");
+  })
+    
+  var vertical = d3.select(".chartW")
+        .append("div")
+        .attr("class", "remove")
+        .style("position", "absolute")
+        .style("z-index", "19")
+        .style("width", "1px")
+        .style("height", "380px")
+        .style("top", "10px")
+        .style("bottom", "30px")
+        .style("left", "0px")
+        .style("background", "#ff1");
+  var verticali = d3.select(".chartW")
+        .append("div")
+        .attr("class", "O")
+        .style("position", "absolute")
+        .style("z-index", "19")
+        .style("width", "1px")
+        .style("height", "380px")
+        .style("top", "10px")
+        .style("bottom", "30px")
+        .style("left", "0px")
+        .style("background", "#ff1");
+  var diai="";
+  var diaf="";
+  var inicio=1;
+  d3.select(".chartW")
+      .on("mousemove", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         vertical.style("left", mousex + "px" )})
+      .on("mouseover", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         vertical.style("left", mousex + "px")})
+      .on("click", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0] + 5;
+         if (inicio==1) {
+            diai=data[mousedate].date;
+            inicio=0;
+         }
+         else
+         {
+          diaf=data[mousedate].date;
+            inicio=1;
+            localStorage.setItem('diaini', diai);
+            localStorage.setItem('diafin', diaf);
+            //window.location=document.getElementById('Horizon').href;
+         }
+         //console.log(diaf);
+         verticali.style("left", mousex + "px")});
+
+  d3.select("select")
+      .on("click",function(){
+        var t = document.getElementById('Caracteristica').value;
+        //document.getElementById("d1").innerHTML = JSON.stringify(layers1);
+        y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
+        var stack1 = d3.layout.stack()
+          .offset("silhouette")
+          .values(function(d) { return d.values; })
+          .x(function(d) { return d.date; })
+          .y(function(d) { return d[t]; });
+          layers1 = stack1(nest.entries(data));
+          d3.selectAll("path")
+          .data(layers1)
+          .transition()
+          .duration(2500)
+            .attr("d", function(d) { return area(d.values); });
+        svg.selectAll("g.y.axis").call(yAxis).remove();
+        svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + width + ", 0)")
+            .call(yAxis.orient("right"));
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis.orient("left"));
+      });
+});
+</script>

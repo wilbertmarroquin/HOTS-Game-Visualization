@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  .horizon {
+    border-top: solid 1px #000;
+    border-bottom: solid 1px #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .horizon + .horizon {
+    border-top: none;
+  }
+
+  .horizon canvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .horizon .title,
+  .horizon .value {
+      bottom: 0;
+      line-height: 30px;
+      margin: 0 6px;
+      position: absolute;
+      font-family: sans-serif;
+      text-shadow: 0 1px 0 rgba(255,255,255,.5);
+      white-space: nowrap;
+  }
+
+  .horizon .title {
+      left: 0;
+  }
+
+  .horizon .value {
+      right: 0;
+  }
+
+</style>
+
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://unpkg.com/d3-horizon-chart@0.0.5"></script>
+<p id="demo"></p>
+<script>
+var format=d3.timeParse("%m/%d/%Y");
+//console.log(diai);
+var Carac="HeroDamage";
+var Listas=[];
+var seriesHe=[];
+var Datos=[];
+var Ids=[];
+var diai=localStorage.getItem('diaini');
+var diaf=localStorage.getItem('diafin');
+var de;
+if(diai=="Fri Jul 14 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia0.csv";
+}
+else
+{
+if(diai=="Sat Jul 15 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia1.csv";
+}
+else
+{
+if(diai=="Sun Jul 16 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia2.csv";
+}
+else
+{
+if(diai=="Mon Jul 17 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia3.csv";
+}
+else
+{
+if(diai=="Tue Jul 18 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia4.csv";
+}
+else
+{
+if(diai=="Wed Jul 19 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia5.csv";
+}
+else
+{
+if(diai=="Thu Jul 20 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia6.csv";
+}
+else
+{
+if(diai=="Fri Jul 21 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia7.csv";
+}
+else
+{
+if(diai=="Sat Jul 22 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia8.csv";
+}
+else
+{
+if(diai=="Sun Jul 23 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia9.csv";
+}
+else
+{
+if(diai=="Mon Jul 24 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia10.csv";
+}
+else
+{
+if(diai=="Tue Jul 25 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia11.csv";
+}
+else
+{
+if(diai=="Wed Jul 26 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia12.csv";
+}
+else
+{
+if(diai=="Thu Jul 27 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia13.csv";
+}
+else
+{
+if(diai=="Fri Jul 28 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia14.csv";
+}
+else
+{
+if(diai=="Sat Jul 29 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia15.csv";
+}
+else
+{
+if(diai=="Sun Jul 30 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia16.csv";
+}
+else
+{
+if(diai=="Mon Jul 31 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia17.csv";
+}
+else
+{
+if(diai=="Tue Aug 01 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia18.csv";
+}
+else
+{
+if(diai=="Wed Aug 02 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia19.csv";
+}
+else
+{
+if(diai=="Thu Aug 03 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia20.csv";
+}
+else
+{
+if(diai=="Fri Aug 04 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia21.csv";
+}
+else
+{
+if(diai=="Sat Aug 05 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia22.csv";
+}
+else
+{
+if(diai=="Sun Aug 06 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia23.csv";
+}
+else
+{
+if(diai=="Mon Aug 07 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia24.csv";
+}
+else
+{
+if(diai=="Tue Aug 08 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia25.csv";
+}
+else
+{
+if(diai=="Wed Aug 09 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia26.csv";
+}
+else
+{
+if(diai=="Thu Aug 10 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia27.csv";
+}
+else
+{
+if(diai=="Wed Aug 11 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia28.csv";
+}
+else
+{
+if(diai=="Thu Aug 12 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia29.csv";
+}
+else
+{
+if(diai=="Fri Jul 14 2017 00:00:00 GMT-0500 (Eastern Standard Time)")
+{
+  de="Dia30.csv";
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+
+
+localStorage.setItem('Dia_A', de);
+var no=diai;
+//console.log(no);
+d3.csv(de, function(data){
+    
+    data.forEach(function(d) {
+      Datos.push(d);
+      Ids.push(d.key);
+});
+//console.log(data[0]);
+var resul=Datos.map(function(d)
+{
+  return d.HeroDamage;
+}).filter(function(d,i){
+    return parseInt(d)>parseInt(Datos[i].SiegeDamage);
+});
+
+//console.log(resul);
+// generate some random data
+/*var series = [];
+for (var i = 0, variance = 0; i < 15000; i++) {
+    variance += (Math.random() - 0.5) / 10;
+    series.push(Math.cos(i/100) + variance);
+}*/
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
+var MaxH=getMaxOfArray(resul);
+//console.log(MaxH);
+for (var i = 0, variance = 0; i < resul.length; i++) {
+    resul[i]=resul[i]*400/MaxH;
+}
+for(var i = 0; i<resul.length;i=i+700/3)
+{
+    var SubH=resul.slice(i,i+700/3);
+    Listas.push(SubH); 
+}
+//seriesHe.toString();
+    //document.getElementById("demo").innerHTML = Combi.length;
+var horizonChart = d3.horizonChart()
+    .step(3)
+    .mode('mirror')
+    .height(400)
+    .title('Horizon, 2-band')
+    .colors(['#ce5145', '#4575b4', '#74add1', '#ce4646']);
+/*[d.data.HeroDamage].toString();
+document.getElementById("demo").innerHTML = [d.data.HeroDamage];
+*/var horizons = d3.select('body').selectAll('.horizon')
+    .data(Listas)
+    .enter().append('div')
+    .attr('class', 'horizon')
+    .each(horizonChart);
+
+  var vertical = d3.selectAll(".horizon")
+        .append("div")
+        .attr("class", "remove")
+        .style("position", "absolute")
+        .style("z-index", "19")
+        .style("width", "1px")
+        .style("height", "380px")
+        .style("top", "10px")
+        .style("bottom", "30px")
+        .style("left", "0px")
+        .style("background", "#ff1");
+  var verticali = d3.selectAll(".horizon")
+        .append("div")
+        .attr("class", "O")
+        .style("position", "absolute")
+        .style("z-index", "19")
+        .style("width", "1px")
+        .style("height", "380px")
+        .style("top", "10px")
+        .style("bottom", "30px")
+        .style("left", "0px")
+        .style("background", "#ff1");
+  var indicei;
+  var indicef;
+  var salto;
+  var elegidos=[];
+  var inicio=1;
+  d3.selectAll(".horizon")
+      .on("mousemove", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0];
+         //console.log(Math.floor(mousex/3));
+         vertical.style("left", mousex + "px" )})
+      .on("mouseover", function(){  
+         mousex = d3.mouse(this);
+         mousex = mousex[0];
+         vertical.style("left", mousex + "px")})
+      .on("click", function(){  
+         mousex = d3.mouse(document.body);
+         mousey = mousex[1];
+         mousex = mousex[0];
+         if (inicio==1) {
+            indicei=Math.floor(mousex/3);
+            inicio=0;
+         }
+         else
+         {
+            salto=Math.floor(mousey/400);
+            indicef=Math.floor(mousex/3);
+            inicio=1;
+            elegidos=Ids.slice(indicei+(400*salto),indicef+(400*salto));
+            //console.log(elegidos);
+            localStorage.setItem('seleccion', JSON.stringify(elegidos));
+         }
+         verticali.style("left", mousex + "px")});
+});
+</script>
